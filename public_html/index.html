@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+              integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" 
+              crossorigin="anonymous"><!-- comment -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script><!-- comment -->
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <form class="m-4" method="POST">
+            <div class="m-3">
+                <label for="emp-name" class="form-label">Employee Name :</label>
+                <input type="text" id="emp-name" class="form-control" placeholder="Employee Name">
+            </div>
+            <div class="m-3">
+                <label for="emp-id" class="form-label">Employee Id</label>
+                <input type="text" id="emp-id" class="form-control" >
+            </div>
+            <div class="m-3">
+                <label for="emp-dep" class="form-label">Department</label>
+                <input type="text" id="emp-dep" class="form-control" >
+            </div>
+            <div class="m-3">
+                <label for="emp-loc" class="form-label">Location</label>
+                <input type="text" id="emp-loc" class="form-control" >
+            </div>
+            <div class="m-3" >
+                <input type="button" id="subBtn" class="btn btn-primary form-control" value="submit" onClick=saveEmployee() >
+            </div>
+        </form>
+        
+        <script>
+            
+            function saveEmployee(){
+                console.log("saveEmployee");
+                //validate data
+                const jsonStr = JSON.stringify(validateAndGetData());
+                const conToken = "90937462|-31949292866248016|90943080";
+                const dbName = "employeePortal";
+                const dbRel = "EMP-REL";
+                const putReq = `{
+                                token : ${conToken},
+                                cmd    : PUT,
+                                dbName : ${dbName},
+                                
+                                rel    :  ${dbRel},
+                                jsonStr : {
+                                    id : 1,
+                                    ${jsonStr}
+                                }
+                            }` ;
+                            
+                 console.log(putReq);
+                 jQuery.ajaxSetup({async: false});
+                 const resultObj = executeCommand(putReq,
+                "http://api.login2explore.com:5577", "/api/iml");
+                console.log(JSON.stringify(resultObj));
+                jQuery.ajaxSetup({async: true});
+//                resetForm();
+        }
+                
+            
+            
+            //data validation
+            function validateAndGetData(){
+//                e.preventDefault();
+                const empName = document.getElementById('emp-name');
+                if(empName.value === ""){
+                    alert("Employee Name is Required");
+                    empName.focus;
+                    return"";
+                }
+                
+                
+                const empId = document.getElementById('emp-id');
+                if(empId.value === ""){
+                    alert("Employee Id is Required");
+                    empId.focus();
+                    return"";
+                }
+                
+                const empDep = document.getElementById('emp-dep');
+                if(empDep.value === ""){
+                    alert("Employee Department is Required");
+                    empDep.focus();
+                    return"";
+                }
+                
+                const empLoc = document.getElementById('emp-loc');
+                if(empLoc.value === ""){
+                    alert("Employee Location is Required");
+                    empLoc.focus();
+                    return"";
+                }
+                
+                const jsonString = 
+                    `
+                        Name : ${empName.value},
+                        Id : ${empId.value},
+                        Department : ${empDep.value},
+                        Location : ${empLoc.value}
+                    `;
+                
+                return jsonString;
+            }
+            
+            
+            function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+                var url = dbBaseUrl + apiEndPointUrl;
+                var jsonObj;
+                $.post(url, reqString, function (result) {
+                jsonObj = JSON.parse(result);
+                }).fail(function (result) {
+                var dataJsonObj = JSON.stringify(result.responseText);
+                jsonObj = JSON.parse(dataJsonObj);
+                });
+                return jsonObj;
+            }
+            
+        </script>
+    </body>
+    
+</html>
